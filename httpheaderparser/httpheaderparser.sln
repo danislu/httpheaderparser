@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "httpheaderparser", "httpheaderparser\httpheaderparser.csproj", "{90BB8131-24DB-40FB-A8F5-C623EF8ECBC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "httpheaderparser.Tests", "httpheaderparser\Tests\httpheaderparser.Tests.csproj", "{390895CD-76C5-4DEF-97CB-5F85B6F47A43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90BB8131-24DB-40FB-A8F5-C623EF8ECBC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90BB8131-24DB-40FB-A8F5-C623EF8ECBC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90BB8131-24DB-40FB-A8F5-C623EF8ECBC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90BB8131-24DB-40FB-A8F5-C623EF8ECBC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{390895CD-76C5-4DEF-97CB-5F85B6F47A43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{390895CD-76C5-4DEF-97CB-5F85B6F47A43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{390895CD-76C5-4DEF-97CB-5F85B6F47A43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{390895CD-76C5-4DEF-97CB-5F85B6F47A43}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
