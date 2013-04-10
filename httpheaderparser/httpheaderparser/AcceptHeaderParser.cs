@@ -5,12 +5,15 @@
 
     public static class AcceptHeaderParser
     {
-        public static string GetPreferedMediaType(string[] mimeTypes, string acceptHeader)
+        public static string GetPreferedMediaType(string[] mediaTypes, string acceptHeader)
         {
-            var headers = ParseAndSortByPrecedence(acceptHeader);
-            var candidates = ParseAndSortByPrecedence(string.Join(",", mimeTypes));
+            if (mediaTypes.Length == 0 || string.IsNullOrEmpty(acceptHeader))
+                return string.Empty;
 
-            var dictionary = new Dictionary<AcceptHeaderPart, double>();
+            var headers = ParseAndSortByPrecedence(acceptHeader);
+            var candidates = ParseAndSortByPrecedence(string.Join(",", mediaTypes));
+
+            var dictionary = new Dictionary<AcceptHeaderPart, int>();
             foreach (var candidate in candidates)
             {
                 var match = headers.FirstOrDefault(h => h.IsExactFullTypeWithParametersMatch(candidate));
@@ -33,8 +36,11 @@
                 }
 
                 match = headers
-                    .OrderByDescending(h => h.GetMatchScore(candidate))
-                    .FirstOrDefault();
+                    .ToDictionary(h => h, h => h.GetMatchScore(candidate))
+                    .Where(kvp => kvp.Value > 0)
+                    .OrderByDescending(kvp => kvp.Value)
+                    .FirstOrDefault()
+                    .Key;
                 if (match != null)
                 {
                     dictionary.Add(candidate, headers.IndexOf(match));

@@ -61,18 +61,13 @@
 
         public double GetMatchScore(AcceptHeaderPart candidate)
         {
-            double score = 0;
-            if (this.Type == "*" || this.Type == candidate.Type)
-                score += 100;
-            if (this.SubType == "*" || this.SubType == candidate.SubType)
-                score += 10;
-            score += Parameters
-                .Where(p => !p.Key.Equals("q"))
-                .Count(parameter => candidate.Parameters
-                    .Where(p => !p.Key.Equals("q"))
-                    .Contains(parameter));
-            score += this.Quality;
-            return score;
+            if (this.Type != "*" && this.Type != candidate.Type)
+                return 0;
+            if (this.SubType != "*" && this.SubType != candidate.SubType)
+                return 0;
+
+            int score = this.Parameters.Count(p => candidate.Parameters.Contains(p));
+            return score + this.Quality;
         }
 
         public bool IsExactFullTypeWithParametersMatch(AcceptHeaderPart candidate)

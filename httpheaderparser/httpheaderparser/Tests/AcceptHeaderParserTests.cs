@@ -21,6 +21,19 @@
         }
 
         [Test]
+        public void TestEmpty()
+        {
+            Assert.AreEqual(string.Empty, AcceptHeaderParser.GetPreferedMediaType(new string[] {}, string.Empty));
+        }
+        
+        [Test]
+        public void TestNoMatch()
+        {
+            const string acceptHeader = "text/*, text/html";
+            Assert.AreEqual(string.Empty, AcceptHeaderParser.GetPreferedMediaType(new [] { "image/png" }, acceptHeader));
+        }
+
+        [Test]
         public void TestSimple()
         {
             const string acceptHeader = "text/*, text/html";
