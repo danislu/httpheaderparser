@@ -1,7 +1,8 @@
 ﻿namespace HttpHeaderParser
 {
-    using System.Linq;
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public static class AcceptHeaderParser
     {
@@ -10,37 +11,13 @@
             if (mediaTypes.Length == 0 || string.IsNullOrEmpty(acceptHeader))
                 return string.Empty;
 
-            var headers = ParseAndSortByPrecedence(acceptHeader);
-            var candidates = ParseAndSortByPrecedence(string.Join(",", mediaTypes));
+            var headers = ParseAndSortByPrecedence(acceptHeader.Split(new[] { ',' }));
+            var candidates = ParseAndSortByPrecedence(mediaTypes);
 
             var dictionary = new Dictionary<AcceptHeaderPart, int>();
             foreach (var candidate in candidates)
             {
-                var match = headers.FirstOrDefault(h => h.IsExactFullTypeWithParametersMatch(candidate));
-                if (match != null)
-                {
-                    dictionary.Add(candidate, headers.IndexOf(match));
-                    continue;
-                }
-                match = headers.FirstOrDefault(h => h.IsExactTypeSubTypeMatch(candidate));
-                if (match != null)
-                {
-                    dictionary.Add(candidate, headers.IndexOf(match));
-                    continue;
-                }
-                match = headers.FirstOrDefault(h => h.IsExactTypeMatch(candidate));
-                if (match != null)
-                {
-                    dictionary.Add(candidate, headers.IndexOf(match));
-                    continue;
-                }
-
-                match = headers
-                    .ToDictionary(h => h, h => h.GetMatchScore(candidate))
-                    .Where(kvp => kvp.Value > 0)
-                    .OrderByDescending(kvp => kvp.Value)
-                    .FirstOrDefault()
-                    .Key;
+                var match = GetBestMatchingAcceptedMediaType(headers, candidate);
                 if (match != null)
                 {
                     dictionary.Add(candidate, headers.IndexOf(match));
@@ -54,10 +31,21 @@
             return bestMatch ?? string.Empty;
         }
 
-        private static IList<AcceptHeaderPart> ParseAndSortByPrecedence(string header)
+        private static AcceptHeaderPart GetBestMatchingAcceptedMediaType(IList<AcceptHeaderPart> headers, AcceptHeaderPart candidate)
         {
-            return header
-                .Split(new[] { ',' })
+            return headers.FirstOrDefault(h => h.IsExactFullTypeWithParametersMatch(candidate))
+                ?? headers.FirstOrDefault(h => h.IsExactTypeSubTypeMatch(candidate))
+                    ?? headers.FirstOrDefault(h => h.IsExactTypeMatch(candidate))
+                        ?? headers.ToDictionary(h => h, h => h.GetMatchScore(candidate))
+                            .Where(kvp => kvp.Value > 0)
+                            .OrderByDescending(kvp => kvp.Value)
+                            .FirstOrDefault()
+                            .Key;
+        }
+
+        private static IList<AcceptHeaderPart> ParseAndSortByPrecedence(IEnumerable<string> mediaTypes)
+        {
+            return mediaTypes
                 .Select(s => new AcceptHeaderPart(s))
                 .OrderByDescending(a => a, new AcceptHeaderPartEqualityComparer())
                 .ToList();
@@ -65,7 +53,10 @@
 
         internal static string[] SortByPrecedence(string header)
         {
-            return ParseAndSortByPrecedence(header)
+            if (string.IsNullOrEmpty(header))
+                throw new ArgumentException("Cannot be null or empty", "header");
+
+            return ParseAndSortByPrecedence(header.Split(new[] { ',' }))
                 .Select(h => h.ToString())
                 .ToArray();
         }
